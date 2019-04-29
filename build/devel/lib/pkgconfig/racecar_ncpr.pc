@@ -1,0 +1,8 @@
+prefix=/home/hbx/ros_proj_ws/src/racecar_ncpr/build/devel
+
+Name: racecar_ncpr
+Description: Description of racecar_ncpr
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/hbx/ros_proj_ws/src/racecar_ncpr/build/devel/lib 
+Requires: 
