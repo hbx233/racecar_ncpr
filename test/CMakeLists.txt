@@ -1,0 +1,1 @@
+add_executable(trajectory_test trajectory_test.cpp)

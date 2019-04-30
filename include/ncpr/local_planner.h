@@ -20,7 +20,15 @@ namespace ncpr{
     explicit LocalPlanner(const ros::NodeHandle& nh);
     
     
-  
+    enum class State {WaitForGlobal, Tracking, Reached};
+    State state_{State::WaitForGlobal};
+  public:
+    void Run(){
+      switch(state_){
+	case State::WaitForGlobal:
+	  
+      }
+    }
   private: 
     //subscribers and Callback functions 
     //Global path subscriber and callback functions, receive global path and cache it 
