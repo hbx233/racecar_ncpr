@@ -4,6 +4,7 @@
 #include <nav_msgs/Path.h>
 using namespace ncpr;
 int main(){
+  //Test Case 1
   using TrajType = PolyTrajectory<double,2,3>;
   TrajType poly_traj;
   TrajType::OutputType start(0,5);

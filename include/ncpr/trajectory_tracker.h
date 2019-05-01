@@ -10,6 +10,7 @@ namespace ncpr{
     explicit TrajectoryTracker(TrajectoryType::Ptr trajectory_ptr):trajectory_ptr_(trajectory_ptr){
       
     }
+    using Ptr = shared_ptr<TrajectoryTracker>;
     using TrajectoryType = PolyTrajectory<double,2,3>;
     /*!
      * @brief Given current output position and velocity, compute control to track the trajectory 
@@ -21,6 +22,7 @@ namespace ncpr{
     Eigen::Vector2d computeTrackingControl(TrajectoryType::OutputType pos, TrajectoryType::OutputType vel, TrajectoryType::Ptr trajectory_ptr, double time);
   private:
     //control parameter 
+    double car_length_;
     double kp{};
     double kd{};
   private:

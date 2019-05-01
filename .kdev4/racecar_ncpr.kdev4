@@ -8,7 +8,7 @@ ProjectRootRelative=
 
 [CMake][CMake Build Directory 0]
 Build Directory Path=file:///home/hbx/ros_proj_ws/src/racecar_ncpr/build
-Build Type=Debug
+Build Type=
 CMake Binary=file:///usr/local/bin/cmake
 Environment Profile=
 Extra Arguments=
