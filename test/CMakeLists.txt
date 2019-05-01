@@ -1,1 +1,3 @@
 add_executable(trajectory_test trajectory_test.cpp)
+add_executable(poly_test poly_test.cpp)
+target_link_libraries(poly_test ${catkin_LIBRARIES})

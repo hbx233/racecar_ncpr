@@ -17,7 +17,8 @@ namespace ncpr{
      * @param vel Flat output velocity 
      * @return control output to track the trajectory 
      */
-    Eigen::Vector2d computeTrackingControl(TrajectoryType::OutputType pos, TrajectoryType::OutputType vel, TrajectoryType::Ptr trajectory_ptr);
+    
+    Eigen::Vector2d computeTrackingControl(TrajectoryType::OutputType pos, TrajectoryType::OutputType vel, TrajectoryType::Ptr trajectory_ptr, double time);
   private:
     //control parameter 
     double kp{};

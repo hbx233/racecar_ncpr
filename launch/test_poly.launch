@@ -1,0 +1,4 @@
+<launch>
+	<node pkg="racecar_ncpr" type="poly_test" name="poly_test" output="screen"/>
+	<!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find muti_planning)/rviz/muti_planning.rviz" /> -->
+</launch>

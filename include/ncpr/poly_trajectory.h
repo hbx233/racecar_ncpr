@@ -1,9 +1,9 @@
 #ifndef POLY_TRAJ_H_
 #define POLY_TRAJ_H_
-
 #include <ncpr/common.h>
 #include <ros/ros.h>
 #include <nav_msgs/Path.h>
+
 namespace ncpr{
   template <typename T, int OutputDim, int BasisOrder>
   class PolyTrajectory{
@@ -28,7 +28,7 @@ namespace ncpr{
      * @brief convert the poly trajectory to Path message type, used to visualize the trajectory in RViz
      * @param time_interval the time interval that used to generate the Path from current trajectory
      * @return sampled trajectory in Path type 
-     */  
+     */
     nav_msgs::Path generatePath(const double& time_interval);
     /*!
      * @brief fit polynomial trajectory given start and goal output and start and goal velocity output
@@ -70,10 +70,25 @@ typename PolyTrajectory<T,OutputDim, BasisOrder>::OutputType PolyTrajectory<T, O
 template <typename T, int OutputDim, int BasisOrder>
 nav_msgs::Path PolyTrajectory<T, OutputDim, BasisOrder>::generatePath(const double& time_interval){
   double t = 0;
+
   nav_msgs::Path path;
-  //TODO: Need Header??
+  geometry_msgs::Pose pose;
+  geometry_msgs::PoseStamped pose_stamped;
+  //TODO: Need Header
+  std_msgs::Header header_msg;
+  header_msg.stamp = ros::Time::now();
+  header_msg.frame_id = "base_link";
+  path.header = header_msg;
+
   while(t<total_time_){
-    path.poses.push_back(getDesired(t,0));
+    OutputType pose_state = getDesired(t,0);
+    cout << pose_state(0) << endl;
+
+    pose.position.x = pose_state(0);
+    pose.position.y = pose_state(1);
+    
+    pose_stamped.pose = pose;
+    path.poses.push_back(pose_stamped);
     t+=time_interval;
   }
   return path;
@@ -102,6 +117,7 @@ void PolyTrajectory<T, OutputDim, BasisOrder>::fitPolyTrajectory
     std::cerr<<"Singularity"<<endl;
   } else{
     coeff_ = Y * Lambda.inverse();
+    total_time_ = total_time;
     valid_trajectory_=true;
   }
 }

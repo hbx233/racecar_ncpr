@@ -1,0 +1,2 @@
+add_executable(trajectory_tracker trajectory_tracker.cpp)
+target_link_libraries(trajectory_tracker ${catkin_LIBRARIES})
