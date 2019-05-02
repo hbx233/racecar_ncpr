@@ -44,6 +44,14 @@ namespace ncpr{
      * @brief Geter for coefficient
      */
     CoeffType getCoefficient();
+    /*!
+     * @brief Geter for local trajectory ID
+     */
+    unsigned long getID();
+    /*!
+     * @brief Geter for local trajectory start time 
+     */
+    double getStartTime();
   private:
     /*!
      * @brief Helper function that returns basis vector of poly trajectory 
@@ -52,6 +60,8 @@ namespace ncpr{
      * @return the basis vector 
      */
     BasisType getBasisVector(const double& time, const int& order);
+    unsigned long id_{0};
+    double start_time_{0};
     bool valid_trajectory_{false};
     OutputType  start_;
     OutputType goal_;
@@ -82,7 +92,6 @@ nav_msgs::Path PolyTrajectory<T, OutputDim, BasisOrder>::generatePath(const doub
 
   while(t<total_time_){
     OutputType pose_state = getDesired(t,0);
-    cout << pose_state(0) << endl;
 
     pose.position.x = pose_state(0);
     pose.position.y = pose_state(1);
@@ -118,6 +127,7 @@ void PolyTrajectory<T, OutputDim, BasisOrder>::fitPolyTrajectory
   } else{
     coeff_ = Y * Lambda.inverse();
     total_time_ = total_time;
+    id_++;
     valid_trajectory_=true;
   }
 }
@@ -139,8 +149,16 @@ template <typename T, int OutputDim, int BasisOrder>
 typename PolyTrajectory<T, OutputDim, BasisOrder>::CoeffType PolyTrajectory<T, OutputDim, BasisOrder>::getCoefficient(){
   return coeff_;
 }
+
+template <typename T, int OutputDim, int BasisOrder>
+unsigned long PolyTrajectory<T, OutputDim, BasisOrder>::getID(){
+  return id_;
+}
+template <typename T, int OutputDim, int BasisOrder>
+double PolyTrajectory<T, OutputDim, BasisOrder>::getStartTime(){
+  return start_time_;
 }
 
-
+}
 
 #endif

@@ -1,2 +1,3 @@
-add_executable(trajectory_tracker trajectory_tracker.cpp)
-target_link_libraries(trajectory_tracker ${catkin_LIBRARIES})
+add_library(ncpr SHARED 
+		trajectory_tracker.cpp)
+target_link_libraries(ncpr ${catkin_LIBRARIES})
