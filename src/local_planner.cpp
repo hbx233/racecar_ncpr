@@ -16,7 +16,7 @@ LocalPlanner::LocalPlanner(const ros::NodeHandle& nh)
   local_trajectory_ptr_ = std::make_shared<PolyTrajectory<double,OUTPUT,BASIS>>();
 
   // Create TrajectoryTracker
-  local_traj_tracker_ptr_ = std::make_shared<TrajectoryTracker>(local_traj_tracker_ptr_);
+  local_traj_tracker_ptr_ = std::make_shared<TrajectoryTracker>(local_trajectory_ptr_);
 }
 
 void LocalPlanner::run()
@@ -37,13 +37,42 @@ void LocalPlanner::globalPath_callback(const nav_msgs::Path& msg)
 
 }
 
-void LocalPlanner::pose_trajectory_callback(const geometry_msgs::Pose& msg)
+void LocalPlanner::pose_trajectory_callback(const nav_msgs::Odometry& msg)
 {
   if(state_==State::Running){
-    //Running,
+    //Running, begin local planner
+    if(local_trajectory_ptr_->getID() == 0){
+      start_ =
+      goal_ =
+      start_vel_ =
+      goal_vel_ =
+      total_time_ =
+      local_trajectory_ptr_->fitPolyTrajectory(start_, g)
+    } else{
+      //if reached global goal, transit state
+      if(){
+        state_ = State::Reached;
+      } else{
+        //if reached local goal
+        if(){
+          //choose start and goal,
+
+          //fit new local trajectory
+          local_trajectory_ptr_->fitPolyTrajectory(...);
+        }
+      }
+    }
   }
 }
 
+void LocalPlanner::pose_tracking_callback(const nav_msgs::Odometry& msg){
+  if(state_ == State::Running){
+    //get current input, time
+    Vector3d control = local_traj_tracker_ptr_->computeTrackingControl();
+    //Publish control, ackermann_msgs
+  }
+}
 
+void LocalPlanner::publishControlToAckermann(Eigen::Vector2d control)
 
 }
