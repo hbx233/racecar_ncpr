@@ -21,38 +21,49 @@ namespace ncpr{
      * @breif Constructors that do initialization and connect all publishers and subscribers
      */
     explicit LocalPlanner(const ros::NodeHandle& nh);
-
-    enum class State {WaitForGlobal, Running, Reached};
-    State state_{State::WaitForGlobal};
+    
+    enum class State {Initializing,WaitForGlobal, Running, Reached};
+    State state_{State::Initializing};
   public:
     void Run();
-  private:
-    //subscribers and Callback functions
-    //Global path subscriber and callback functions, receive global path and cache it
+  private: 
+    //subscribers and Callback functions 
+    //Global path subscriber and callback functions, receive global path and cache it 
+    string topic_globalpath_;
     ros::Subscriber sub_globalpath_;
     /*!
      * @brief Callback functions for global path, will transfer the state of local planner to Running state
      * @param msg global path message
      */
     void globalPath_callback(const nav_msgs::Path& msg);
-    //Current pose subscriber and callback functions
-    //TODO: Need to get current position and velocity, How to get velocity
+    //Current pose subscriber and callback functions 
+    //TODO: Need to get current position and velocity, How to get velocity 
+    string topic_odom_;
     ros::Subscriber sub_pose_trajectory_;
     /*!
      * @brief Pose Callback function for trajectory generation
      *
      */
     void pose_trajectory_callback(const geometry_msgs::Pose& msg);
-
+    
+    //publisher to publish local path, only used to visualize 
+    string topic_localpath_;
+    ros::Publisher pub_localpath_;
+    
     ros::Subscriber sub_pose_tracking_;
     /*!
      * @brief Pose Callback function for trajectory tracking
      */
     void pose_tracking_callback(const geometry_msgs::Pose& msg);
   private:
-    //Publisher and their publish function
-    //Control publisher
-    ros::Publisher pub_control;
+    //Tracking and Control part 
+    //Control publisher 
+    double car_length_;
+    double kp_;
+    double kd_;
+    double goal_threshold_;
+    string topic_control_;
+    ros::Publisher pub_control_;
     /*!
      * @brief convert control to ackermann_msgs and publish it
      * @param control the high level control signals that pass to low level controller
@@ -79,7 +90,7 @@ namespace ncpr{
 
     //TODO: Write a tf listener node which listen to tf and publish current pose
     geometry_msgs::Pose curr_pose_;
-    int look_ahead{10};
+    int look_ahead_{10};
     PolyTrajectory<double,OUTPUT,BASIS>::OutputType start_;
     PolyTrajectory<double,OUTPUT,BASIS>::OutputType goal_;
     PolyTrajectory<double,OUTPUT,BASIS>::OutputType start_vel_;
