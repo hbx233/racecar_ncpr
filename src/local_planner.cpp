@@ -17,7 +17,8 @@ LocalPlanner::LocalPlanner(const ros::NodeHandle& nh)
   nh_.getParam("tracking/kd", kd_);
   nh_.getParam("tracking/goal_threshold", goal_threshold_);
   // Connect all the subscribers and publishers
-  //subscribers 
+  //subscribers
+  
   sub_globalpath_ = nh_.subscribe(topic_globalpath_, 10, &LocalPlanner::globalPath_callback, this);
   sub_pose_trajectory_ = nh_.subscribe(topic_odom_, 10, &LocalPlanner::pose_trajectory_callback, this);
   sub_pose_tracking_ = nh_.subscribe(topic_odom_, 10, &LocalPlanner::pose_tracking_callback, this);
@@ -42,7 +43,7 @@ void LocalPlanner::run()
 
 void LocalPlanner::globalPath_callback(const nav_msgs::Path& msg)
 {
-  if(state_ = State::Initializing &&  msg.poses.size() != 0){
+  if(state_ == State::WaitForGlobal &&  msg.poses.size() != 0){
     ROS_INFO("receving Global path...");
     global_path_ = msg;
     state_ = State::Running;
@@ -76,6 +77,13 @@ PolyTrajectory< double, OUTPUT, BASIS >::OutputType LocalPlanner::poseToOutputVe
 {
   PolyTrajectory<double, OUTPUT, BASIS>::OutputType vec;
   vec<<pose.position.x<<pose.position.y;
+  return vec;
+}
+
+PolyTrajectory< double, OUTPUT, BASIS >::OutputType LocalPlanner::twistToOutputVector(const geometry_msgs::Twist& twist)
+{
+  PolyTrajectory<double, OUTPUT, BASIS>::OutputType vec;
+  vec<<twist.linear.x<<twist.linear.y;
   return vec;
 }
 
@@ -115,15 +123,16 @@ void LocalPlanner::pose_tracking_callback(const nav_msgs::Odometry& msg){
     //TODO: Use time stamp  or get a new time 
     double curr_time = ros::Time::now().toSec();
     PolyTrajectory<double, OUTPUT, BASIS>::OutputType pos = poseToOutputVector(msg.pose.pose);
+    PolyTrajectory<double, OUTPUT, BASIS>::OutputType vel = twistToOutputVector(msg.twist.twist);
     //TODO: Need to pass in a theta or use velocity to get theta 
-    Vector3d control = local_traj_tracker_ptr_->computeTrackingControl(msg.pose.pose,msg.twist.twist.linear,curr_time);
+    Vector3d control = local_traj_tracker_ptr_->computeTrackingControl(pose,vel,curr_time);
     //Publish control, ackermann_msgs
     ackermann_msgs::AckermannDriveStamped ackermann_control;
-    ackermann_control.drive.speed = ;
-    ackermann_control.drive.acceleration = ;
-    ackermann_control.drive.jerk = ;
-    ackermann_control.drive.steering_angle = ;
-    ackermann_control.drive.steering_angle_velocity = ;
+    ackermann_control.drive.speed = control(1);
+    ackermann_control.drive.acceleration = control(0);
+    ackermann_control.drive.jerk = 0.0;
+    ackermann_control.drive.steering_angle = control(2);
+    ackermann_control.drive.steering_angle_velocity = 0.0;
     pub_control_.publish(ackermann_control);
   }
 }
