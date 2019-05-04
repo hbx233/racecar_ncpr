@@ -14,6 +14,8 @@
 #include <chrono>
 #include <termios.h>
 #include <stdio.h>
+#include <limits.h>
+#include <functional>
 using std::vector;
 using std::string;
 using std::pair;
