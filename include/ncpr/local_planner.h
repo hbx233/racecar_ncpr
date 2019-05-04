@@ -77,7 +77,11 @@ namespace ncpr{
      * @param pose From global path or subscribed current pose from gazebo.
      */
     PolyTrajectory<double,OUTPUT,BASIS>::OutputType poseToOutputVector(const geometry_msgs::Pose& pose);
-    
+    /*!
+     * @brief Helper function that convert twist to output vector
+     * @param twist twist value
+     */
+    PolyTrajectory<double,OUTPUT,BASIS>::OutputType twistToOutputVector(const geometry_msgs::Twist& twist);
     /*!
      * @brief Calculate desired velocity given index of pose in global path
      * @param index Index of given pose in global path
@@ -95,12 +99,15 @@ namespace ncpr{
      *        Set the calculated value to class member fields 
      */
     void calculateStartAndGoal(const geometry_msgs::Pose& pose);
-    //TODO: Write a tf listener node which listen to tf and publish current pose 
-    geometry_msgs::Pose curr_pose_;
+    //TODO: Write a tf listener node which listen to tf and publish current pose
+    //Trajectory Generation Parameter 
     int look_ahead_{10};
     double vel_magnitude_;
+    double total_time_;
     PolyTrajectory<double,OUTPUT,BASIS>::OutputType local_start_;
+    int local_start_idx_;
     PolyTrajectory<double,OUTPUT,BASIS>::OutputType local_goal_;
+    int local_goal_idx_;
     PolyTrajectory<double,OUTPUT,BASIS>::OutputType local_start_vel_;
     PolyTrajectory<double,OUTPUT,BASIS>::OutputType local_goal_vel_;
   private: 

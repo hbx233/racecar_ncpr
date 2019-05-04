@@ -6,8 +6,6 @@ namespace ncpr{
   {  
     if(trajectory_ptr_->getID() != trajectory_id_){
       //The local trajectory is updated, need to switch and clear all caches 
-      //clear current integrated velocity 
-      velocity_ = 0;
       //update trajectory_id_
       trajectory_id_  = trajectory_ptr_->getID();
       //update current trajectory start time
@@ -46,10 +44,11 @@ namespace ncpr{
     
     // u1 = velocity, u2 = steering angle
     Eigen::Vector3d u;
-    velocity_ = velocity_ + u_temp(0,0)*dt;
+    double old_velocity = std::sqrt(std::pow(vel(0),2) + std::pow(vel(1),2));
+    velocity_ = old_velocity + u_temp(0,0)*dt;
     u(0) = u_temp(0,0); //acceraltaion;
     u(1) = velocity_; //velocity
-    u(2) = atan2(u_temp(1,0)*L, pow(u(0),2)); //steering anlge.
+    u(2) = atan2(u_temp(1,0)*L, pow(old_velocity,2)); //steering anlge.
     cout<<"Acceleration: "<<u(0)<<endl;
     cout<<"Velocity: "<<u(1)<<endl;
     cout<<"Steering Angle: "<<u(2)<<endl;

@@ -8,10 +8,10 @@ int main(int argc, char** argv){
   //create a trajectory
   using TrajType = PolyTrajectory<double,2,3>;
   TrajType::Ptr poly_traj = std::make_shared<TrajType>();
-  TrajType::OutputType start(0,5);
-  TrajType::OutputType start_vel(1,0);
-  TrajType::OutputType goal(5,2.5);
-  TrajType::OutputType goal_vel(0,0);
+  TrajType::OutputType start(-5,-3);
+  TrajType::OutputType start_vel(0.877582561890373,0.479425538604203);
+  TrajType::OutputType goal(0,0);
+  TrajType::OutputType goal_vel(0.540302305868140,0.841470984807897);
   double total_time = 10;
   
   //create a trajectory tracker 
@@ -19,15 +19,11 @@ int main(int argc, char** argv){
   
   //first fit a trajectory 
   poly_traj->fitPolyTrajectory(start, goal, start_vel, goal_vel, total_time);
+  cout<<poly_traj->getCoefficient()<<endl;
 
-  TrajType::OutputType real_pos;
-  TrajType::OutputType real_vel;
-  double p1; double p2;
-  double v1; double v2;
+  TrajType::OutputType real_pos(-4.750000000000000,-2.750000000000000);
+  TrajType::OutputType real_vel(0.877582561890373,0.479425538604203);
   cout<<"Input position and velocity"<<endl;
-  std::cin>>p1>>p2>>v1>>v2;
-  real_pos << p1, p2;
-  real_vel <<v1, v2;
   double real_time=0;
   //Track the trajectory for one step 
   Vector3d control = traj_tracker->computeTrackingControl(real_pos, real_vel, real_time);

@@ -11,6 +11,8 @@ LocalPlanner::LocalPlanner(const ros::NodeHandle& nh)
   nh_.getParam("global_path", topic_globalpath_);
   nh_.getParam("trajectory/lookahead", look_ahead_);
   nh_.getParam("trajectory/local_path", topic_localpath_);
+  nh_.getParam("trajectory/total_time", total_time_);
+  nh_.getParam("trajectory/vel_magnitude", vel_magnitude_);
   nh_.getParam("tracking/odom", topic_odom_);
   nh_.getParam("tracking/control", topic_control_);
   nh_.getParam("tracking/kp", kp_);
@@ -34,11 +36,6 @@ LocalPlanner::LocalPlanner(const ros::NodeHandle& nh)
   local_traj_tracker_ptr_ = std::make_shared<TrajectoryTracker>(local_traj_tracker_ptr_);
   
   state_ = State::WaitForGlobal;
-}
-
-void LocalPlanner::run()
-{
-
 }
 
 void LocalPlanner::globalPath_callback(const nav_msgs::Path& msg)
@@ -76,14 +73,14 @@ int LocalPlanner::findNearestInGlobalPath(const geometry_msgs::Pose& pose)
 PolyTrajectory< double, OUTPUT, BASIS >::OutputType LocalPlanner::poseToOutputVector(const geometry_msgs::Pose& pose)
 {
   PolyTrajectory<double, OUTPUT, BASIS>::OutputType vec;
-  vec<<pose.position.x<<pose.position.y;
+  vec<<pose.position.x,pose.position.y;
   return vec;
 }
 
 PolyTrajectory< double, OUTPUT, BASIS >::OutputType LocalPlanner::twistToOutputVector(const geometry_msgs::Twist& twist)
 {
   PolyTrajectory<double, OUTPUT, BASIS>::OutputType vec;
-  vec<<twist.linear.x<<twist.linear.y;
+  vec<<twist.linear.x, twist.linear.y;
   return vec;
 }
 
@@ -99,9 +96,9 @@ PolyTrajectory< double, OUTPUT, BASIS >::OutputType LocalPlanner::calculateVeloc
     geometry_msgs::Pose next_pose = global_path_.poses[i+1].pose;
     double dist = std::sqrt(pose2PoseDist(prev_pose, next_pose));
     //calculate direction
-    vel<<(next_pose.position.x - prev_pose.position.x)/dist<<(next_pose.position.y - prev_pose.position.y)/dist;
+    vel<<(next_pose.position.x - prev_pose.position.x)/dist,(next_pose.position.y - prev_pose.position.y)/dist;
     //mult with magnitude
-    vel*=vel_magnitude_;
+    vel*=vel_magnitude;
   }
   return vel;
 }
@@ -112,7 +109,7 @@ void LocalPlanner::calculateStartAndGoal(const int& start_idx){
   local_start_ = poseToOutputVector(global_path_.poses[start_idx].pose);
   local_start_vel_ = calculateVelocity(start_idx, vel_magnitude_);
   //look ahead to set local goal in global path
-  int local_goal_idx = start_idx + look_ahead_ >= global_path_.poses.size() ? global_path_.poses.size()-1 : nearest_idx + look_ahead_;
+  int local_goal_idx = start_idx + look_ahead_ >= global_path_.poses.size() ? global_path_.poses.size()-1 : start_idx + look_ahead_;
   local_goal_ = poseToOutputVector(global_path_.poses[local_goal_idx].pose);
   local_goal_vel_ = calculateVelocity(local_goal_idx, vel_magnitude_);
 }
@@ -125,7 +122,7 @@ void LocalPlanner::pose_tracking_callback(const nav_msgs::Odometry& msg){
     PolyTrajectory<double, OUTPUT, BASIS>::OutputType pos = poseToOutputVector(msg.pose.pose);
     PolyTrajectory<double, OUTPUT, BASIS>::OutputType vel = twistToOutputVector(msg.twist.twist);
     //TODO: Need to pass in a theta or use velocity to get theta 
-    Vector3d control = local_traj_tracker_ptr_->computeTrackingControl(pose,vel,curr_time);
+    Vector3d control = local_traj_tracker_ptr_->computeTrackingControl(pos,vel,curr_time);
     //Publish control, ackermann_msgs
     ackermann_msgs::AckermannDriveStamped ackermann_control;
     ackermann_control.drive.speed = control(1);
@@ -148,19 +145,29 @@ void LocalPlanner::pose_trajectory_callback(const nav_msgs::Odometry& msg)
     //2. local trajectory tracking time out(exceeded the seted total time)
     if(local_trajectory_ptr_->getID() == 0){
       //start from start index in global path 
-      calculateStartAndGoal(0);
-      double total_time = 10;
-      local_trajectory_ptr_->fitPolyTrajectory(local_start_, local_goal_, local_start_vel_, local_goal_vel_, total_time);
+      ROS_INFO("[Local Planner] Start Local Planner from initial pose in Global Path");
+      local_start_idx_ = 0;
+      calculateStartAndGoal(local_start_idx_);
+      local_trajectory_ptr_->fitPolyTrajectory(local_start_, local_goal_, local_start_vel_, local_goal_vel_, total_time_);
     } else{
       //check if reached local goal 
-      if(std::sqrt(pose2PoseDist())<goal_threshold_){
-	
+      if(std::sqrt(pose2PoseDist(curr_pose, global_path_.poses[local_goal_idx_].pose))<goal_threshold_){
+	//switch goal to start 
+	ROS_INFO("[Local Planner] Local Goal Reached, Switch local goal to next local start");
+	local_start_idx_ = local_goal_idx_;
+	calculateStartAndGoal(local_start_idx_);
+        local_trajectory_ptr_ -> fitPolyTrajectory(local_start_, local_goal_, local_start_vel_, local_goal_vel_,total_time_);
       } else{
 	//check time out,
-	if(time out){
+	if(local_traj_tracker_ptr_->getTrackingElapsedTime() >= local_trajectory_ptr_->getTotalTime()){
 	  //replan
+	  ROS_INFO("[Local Planner] Local tracking time out, Replanning");
+	  int nearest_idx = findNearestInGlobalPath(curr_pose);
+	  calculateStartAndGoal(nearest_idx);
+          local_trajectory_ptr_ -> fitPolyTrajectory(local_start_, local_goal_, local_start_vel_, local_goal_vel_,total_time_);
 	} else{
-	  //maintain current tracking 
+	  //maintain current tracking
+	  ROS_INFO("[Local Planner] Still tracking");
 	}
       }
     }

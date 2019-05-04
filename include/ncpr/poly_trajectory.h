@@ -52,6 +52,10 @@ namespace ncpr{
      * @brief Geter for local trajectory start time 
      */
     double getStartTime();
+    /*!
+     * @brief Geter for total time
+     */
+    double getTotalTime();
   private:
     /*!
      * @brief Helper function that returns basis vector of poly trajectory 
@@ -157,6 +161,11 @@ unsigned long PolyTrajectory<T, OutputDim, BasisOrder>::getID(){
 template <typename T, int OutputDim, int BasisOrder>
 double PolyTrajectory<T, OutputDim, BasisOrder>::getStartTime(){
   return start_time_;
+}
+
+template <typename T, int OutputDim, int BasisOrder>
+double PolyTrajectory<T, OutputDim, BasisOrder>::getTotalTime(){
+  return total_time_;
 }
 
 }

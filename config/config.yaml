@@ -1,0 +1,19 @@
+car: 
+  length: 
+
+global_path: 
+
+trajectory:
+  lookahead:
+  total_time:
+  local_path:
+  vel_magnitude:
+  
+  
+tracking:
+  odom:
+  control:
+  kp:
+  kd:
+  goal_threshold:
+  
