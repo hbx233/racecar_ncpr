@@ -42,21 +42,22 @@ void LocalPlanner::run()
 
 void LocalPlanner::globalPath_callback(const nav_msgs::Path& msg)
 {
-  if(msg.poses.size() != 0){
+  if(state_ = State::Initializing &&  msg.poses.size() != 0){
     ROS_INFO("receving Global path...");
     global_path_ = msg;
     state_ = State::Running;
+    ROS_INFO("Received Global path, begin local planning");
   }
   else{
     ROS_ERROR("Empty Global path !");
   }
-
 }
 
 void LocalPlanner::pose_trajectory_callback(const geometry_msgs::Pose& msg)
 {
   if(state_==State::Running){
     //Running
+    
   }
 }
 
