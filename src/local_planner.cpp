@@ -53,7 +53,7 @@ void LocalPlanner::globalPath_callback(const nav_msgs::Path& msg)
   }
 }
 
-void LocalPlanner::pose_trajectory_callback(const geometry_msgs::Pose& msg)
+void LocalPlanner::pose_trajectory_callback(const nav_msgs::Odometry& msg)
 {
   if(state_==State::Running){
     //Running
@@ -61,6 +61,14 @@ void LocalPlanner::pose_trajectory_callback(const geometry_msgs::Pose& msg)
   }
 }
 
+void LocalPlanner::pose_tracking_callback(const nav_msgs::Odometry& msg){
+  if(state_ == State::Running){
+    //get current input, time
+    Vector3d control = local_traj_tracker_ptr_->computeTrackingControl();
+    //Publish control, ackermann_msgs
+  }
+}
 
+void LocalPlanner::publishControlToAckermann(Eigen::Vector2d control)
 
 }
