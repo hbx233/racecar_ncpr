@@ -114,13 +114,12 @@ PolyTrajectory< double, OUTPUT, BASIS >::OutputType LocalPlanner::calculateVeloc
 }
 
 
-void LocalPlanner::calculateStartAndGoal(const geometry_msgs::Pose& pose){
-  //find the nearest pose in global path
-  int nearest_idx = findNearestInGlobalPath(pose);
-  local_start_ = poseToOutputVector(global_path_.poses[nearest_idx].pose);
-  local_start_vel_ = calculateVelocity(nearest_idx, vel_magnitude_);
+void LocalPlanner::calculateStartAndGoal(const int& start_idx){
+  //calculate the start
+  local_start_ = poseToOutputVector(global_path_.poses[start_idx].pose);
+  local_start_vel_ = calculateVelocity(start_idx, vel_magnitude_);
   //look ahead to set local goal in global path
-  int local_goal_idx = nearest_idx + look_ahead_ >= global_path_.poses.size() ? global_path_.poses.size()-1 : nearest_idx + look_ahead_;
+  int local_goal_idx = start_idx + look_ahead_ >= global_path_.poses.size() ? global_path_.poses.size()-1 : nearest_idx + look_ahead_;
   local_goal_ = poseToOutputVector(global_path_.poses[local_goal_idx].pose);
   local_goal_vel_ = calculateVelocity(local_goal_idx, vel_magnitude_);
 }
