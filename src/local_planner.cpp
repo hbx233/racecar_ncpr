@@ -53,22 +53,7 @@ void LocalPlanner::globalPath_callback(const nav_msgs::Path& msg)
   }
 }
 
-void LocalPlanner::pose_trajectory_callback(const nav_msgs::Odometry& msg)
-{
-  if(state_==State::Running){
-    //Running
-    //Initial Local Planning
-    //TODO: Switch and replan when 
-    //1. reached local goal in certian threshold 
-    //2. local trajectory tracking time out(exceeded the seted total time)
-    if(local_trajectory_ptr_->getID() == 0){
-      //calculate start and goal 
-      
-    } else{
-      
-    }
-  }
-}
+
 
 double pose2PoseDist(const geometry_msgs::Pose& pose1, const geometry_msgs::Pose& pose2){
   return (std::pow(pose1.position.x-pose2.position.x,2) - std::pow(pose1.position.y - pose2.position.y));
@@ -131,7 +116,7 @@ void LocalPlanner::pose_tracking_callback(const nav_msgs::Odometry& msg){
     double curr_time = ros::Time::now().toSec();
     PolyTrajectory<double, OUTPUT, BASIS>::OutputType pos = poseToOutputVector(msg.pose.pose);
     //TODO: Need to pass in a theta or use velocity to get theta 
-    //Vector3d control = local_traj_tracker_ptr_->computeTrackingControl(msg.pose.pose,msg.twist.twist.linear);
+    Vector3d control = local_traj_tracker_ptr_->computeTrackingControl(msg.pose.pose,msg.twist.twist.linear,curr_time);
     //Publish control, ackermann_msgs
     ackermann_msgs::AckermannDriveStamped ackermann_control;
     ackermann_control.drive.speed = ;
@@ -140,6 +125,36 @@ void LocalPlanner::pose_tracking_callback(const nav_msgs::Odometry& msg){
     ackermann_control.drive.steering_angle = ;
     ackermann_control.drive.steering_angle_velocity = ;
     pub_control_.publish(ackermann_control);
+  }
+}
+
+void LocalPlanner::pose_trajectory_callback(const nav_msgs::Odometry& msg)
+{
+  if(state_==State::Running){
+    //Running
+    geometry_msgs::Pose curr_pose = msg.pose.pose;
+    //Initial Local Planning
+    //TODO: Switch and replan when 
+    //1. reached local goal in certian threshold 
+    //2. local trajectory tracking time out(exceeded the seted total time)
+    if(local_trajectory_ptr_->getID() == 0){
+      //start from start index in global path 
+      calculateStartAndGoal(0);
+      double total_time = 10;
+      local_trajectory_ptr_->fitPolyTrajectory(local_start_, local_goal_, local_start_vel_, local_goal_vel_, total_time);
+    } else{
+      //check if reached local goal 
+      if(std::sqrt(pose2PoseDist())<goal_threshold_){
+	
+      } else{
+	//check time out,
+	if(time out){
+	  //replan
+	} else{
+	  //maintain current tracking 
+	}
+      }
+    }
   }
 }
 
