@@ -50,7 +50,9 @@ namespace ncpr{
     u(0) = u_temp(0,0); //acceraltaion;
     u(1) = velocity_; //velocity
     u(2) = atan2(u_temp(1,0)*L, pow(u(0),2)); //steering anlge.
-    
+    cout<<"Acceleration: "<<u(0)<<endl;
+    cout<<"Velocity: "<<u(1)<<endl;
+    cout<<"Steering Angle: "<<u(2)<<endl;
     return u;
   }
 double TrajectoryTracker::getTrackingElapsedTime()

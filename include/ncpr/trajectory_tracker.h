@@ -28,9 +28,9 @@ namespace ncpr{
   private:
     //control parameter 
     double velocity_;
-    double car_length_;
-    double kp{};
-    double kd{};
+    double car_length_{1};
+    double kp{1};
+    double kd{1};
   private:
     double start_time_;
     double prev_time_;
