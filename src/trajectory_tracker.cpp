@@ -16,7 +16,7 @@ namespace ncpr{
     prev_time_ = curr_time_;
     //current local trajectory tracking time is the absolute time - local trajectory start time;
     curr_time_ = time - start_time_;
-    double dt = curr_time_ - prev_time_ <0 ? 0: curr_time_ - prev_time_;
+    double dt = curr_time_ - prev_time_ <0 ? 0.05: curr_time_ - prev_time_;
     // car length
     double L = car_length_;
     // desired pose
@@ -25,9 +25,19 @@ namespace ncpr{
     typename TrajectoryType::OutputType vel_d = trajectory_ptr_->getDesired(curr_time_,1);
     // desired acceleration
     typename TrajectoryType::OutputType vel_dd = trajectory_ptr_->getDesired(curr_time_,2);
+    cout<<"[Debug] Elapsed Time: "<<time-start_time_<<endl;
+    cout<<"[Debug] Desired pose: "<<pose_d<<endl;
+    cout<<"[Debug] Desired vel: "<<vel_d<<endl;
+    cout<<"[Debug] Desired acceleration: "<<vel_dd<<endl;
+    cout<<"[Debug] Current pose: "<<pos<<endl;
+    cout<<"[Debug] Current vel: "<<vel<<endl;
     
     typename TrajectoryType::OutputType z_pos = pos - pose_d;
+    cout<<"[Debug] z_pos[0]: "<<z_pos(0)<<endl;
+    cout<<"[Debug] z_pos[1]: "<<z_pos(1)<<endl;
     typename TrajectoryType::OutputType z_vel = vel - vel_d;
+    cout<<"[Debug] z_vel[0]: "<<z_vel(0)<<endl;
+    cout<<"[Debug] z_vel[1]: "<<z_vel(1)<<endl;
     
     //set the virtual input
     typename TrajectoryType::OutputType v = vel_dd - kp*z_pos - kd*z_vel;
@@ -36,6 +46,7 @@ namespace ncpr{
     cout<<"[Debug] V(1): "<<v(1)<<endl;
 
     double theta = atan2(vel(1,0), vel(0,0));
+    cout<<"[Debug] theta: "<<theta<<endl;
     Eigen::Matrix2d Rot;
     Rot << cos(theta), -sin(theta),
     sin(theta),  cos(theta);
@@ -62,7 +73,7 @@ namespace ncpr{
   }
 double TrajectoryTracker::getTrackingElapsedTime()
 {
-  return curr_time_-start_time_;
+  return curr_time_;
 }
   
 }

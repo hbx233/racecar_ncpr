@@ -50,6 +50,7 @@ int LocalPlanner::findNearestInGlobalPath(const geometry_msgs::Pose& pose)
     double dist = pose2PoseDist(pose, global_path_.poses[i].pose);
     if(dist < min_dist){
       min_idx = i;
+      min_dist = dist;
     }
   }
   return min_idx;
@@ -135,6 +136,15 @@ void LocalPlanner::pose_tracking_callback(const nav_msgs::Odometry& msg){
     ROS_INFO("[Local Planner] Publishing Control \n");
     pub_control_.publish(ackermann_control); 
     ROS_INFO("[Local Planner] Published Control \n");
+  } else if(state_ == State::Reached){
+    ROS_INFO("[Local Planner] Global Path reached");
+    ackermann_msgs::AckermannDriveStamped ackermann_control;
+    ackermann_control.drive.speed = 0;
+    ackermann_control.drive.acceleration = 0;
+    ackermann_control.drive.jerk = 0.0;
+    ackermann_control.drive.steering_angle = 0;
+    ackermann_control.drive.steering_angle_velocity = 0.0;
+    pub_control_.publish(ackermann_control); 
   }
 }
 
@@ -143,11 +153,8 @@ void LocalPlanner::pose_trajectory_callback(const nav_msgs::Odometry& msg)
   ROS_INFO("[Debug] Trajectory Generation Callback \n");
   if(state_==State::Running){
     //Running
-    cout<<"[Debug] Point 1"<<endl;
     geometry_msgs::Pose curr_pose = msg.pose.pose;
-    cout<<"[Debug] Point 2"<<endl;
     nav_msgs::Path local_path;
-    cout<<"[Debug] Point 3"<<endl;
     cout<<"[Debug] Local Goal Idx: "<<local_goal_idx_<<endl;
     //Initial Local Planning
     //TODO: Switch and replan when 
@@ -168,6 +175,9 @@ void LocalPlanner::pose_trajectory_callback(const nav_msgs::Odometry& msg)
       if(std::sqrt(pose2PoseDist(curr_pose, global_path_.poses[local_goal_idx_].pose))<goal_threshold_){
 	      //switch goal to start 
 	      ROS_INFO("[Local Planner] Local Goal Reached, Switch local goal to next local start \n");
+        if(local_goal_idx_ == global_path_.poses.size()-1){
+          state_ = State::Reached;
+        }
 	      local_start_idx_ = local_goal_idx_;
 	      calculateStartAndGoal(local_start_idx_);
         local_trajectory_ptr_ -> fitPolyTrajectory(local_start_, local_goal_, local_start_vel_, local_goal_vel_,total_time_);
@@ -179,6 +189,7 @@ void LocalPlanner::pose_trajectory_callback(const nav_msgs::Odometry& msg)
 	        //replan
 	        ROS_INFO("[Local Planner] Local tracking time out, Replanning \n");
 	        int nearest_idx = findNearestInGlobalPath(curr_pose);
+          cout<<"[Debug] nearest_idx"<<nearest_idx<<endl;
 	        calculateStartAndGoal(nearest_idx);
           local_trajectory_ptr_ -> fitPolyTrajectory(local_start_, local_goal_, local_start_vel_, local_goal_vel_,total_time_);
 	        local_path = local_trajectory_ptr_->generatePath(0.01);

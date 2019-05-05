@@ -4,8 +4,8 @@ car:
 global_path: global_path
 
 trajectory:
-  lookahead: 10
-  total_time: 10
+  lookahead: 30
+  total_time: 5
   local_path: local_path
   vel_magnitude: 0.5
   
@@ -13,7 +13,7 @@ trajectory:
 tracking:
   odom: /vesc/odom
   control: /vesc/high_level/ackermann_cmd_mux/input/default
-  kp: 1.0
-  kd: 1.0
-  goal_threshold: 0.1
+  kp: 10.0
+  kd: 3.0
+  goal_threshold: 0.5
   
