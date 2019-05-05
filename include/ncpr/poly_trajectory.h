@@ -56,6 +56,10 @@ namespace ncpr{
      * @brief Geter for total time
      */
     double getTotalTime();
+    /*!
+     * @brief Geter for local trajectory valid flag
+     */
+    bool valid();
   private:
     /*!
      * @brief Helper function that returns basis vector of poly trajectory 
@@ -91,7 +95,7 @@ nav_msgs::Path PolyTrajectory<T, OutputDim, BasisOrder>::generatePath(const doub
   //TODO: Need Header
   std_msgs::Header header_msg;
   header_msg.stamp = ros::Time::now();
-  header_msg.frame_id = "base_link";
+  header_msg.frame_id = "map";
   path.header = header_msg;
 
   while(t<total_time_){
@@ -167,7 +171,10 @@ template <typename T, int OutputDim, int BasisOrder>
 double PolyTrajectory<T, OutputDim, BasisOrder>::getTotalTime(){
   return total_time_;
 }
-
+template <typename T, int OutputDim, int BasisOrder>
+bool PolyTrajectory<T, OutputDim, BasisOrder>::valid(){
+  return valid_trajectory_;
+}
 }
 
 #endif

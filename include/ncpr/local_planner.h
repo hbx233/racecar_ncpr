@@ -45,7 +45,7 @@ namespace ncpr{
      * @brief Pose Callback function for trajectory generation
      * 
      */
-    void pose_trajectory_callback(const geometry_msgs::Pose& msg);
+    void pose_trajectory_callback(const nav_msgs::Odometry& msg);
     
     //publisher to publish local path, only used to visualize 
     string topic_localpath_;
@@ -55,7 +55,7 @@ namespace ncpr{
     /*!
      * @brief Pose Callback function for trajectory tracking 
      */
-    void pose_tracking_callback(const geometry_msgs::Pose& msg);
+    void pose_tracking_callback(const nav_msgs::Odometry& msg);
   private:
     //Tracking and Control part 
     //Control publisher 
@@ -98,7 +98,7 @@ namespace ncpr{
      * @brief Calculate local trajectory's start and goal position and velocity, 
      *        Set the calculated value to class member fields 
      */
-    void calculateStartAndGoal(const geometry_msgs::Pose& pose);
+    void calculateStartAndGoal(const int& start_idx);
     //TODO: Write a tf listener node which listen to tf and publish current pose
     //Trajectory Generation Parameter 
     int look_ahead_{10};

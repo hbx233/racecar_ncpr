@@ -16,7 +16,7 @@ namespace ncpr{
     prev_time_ = curr_time_;
     //current local trajectory tracking time is the absolute time - local trajectory start time;
     curr_time_ = time - start_time_;
-    double dt = curr_time_ - prev_time_;
+    double dt = curr_time_ - prev_time_ <0 ? 0: curr_time_ - prev_time_;
     // car length
     double L = car_length_;
     // desired pose
@@ -32,6 +32,9 @@ namespace ncpr{
     //set the virtual input
     typename TrajectoryType::OutputType v = vel_dd - kp*z_pos - kd*z_vel;
     
+    cout<<"[Debug] V(0): "<<v(0)<<endl;
+    cout<<"[Debug] V(1): "<<v(1)<<endl;
+
     double theta = atan2(vel(1,0), vel(0,0));
     Eigen::Matrix2d Rot;
     Rot << cos(theta), -sin(theta),
@@ -45,6 +48,9 @@ namespace ncpr{
     // u1 = velocity, u2 = steering angle
     Eigen::Vector3d u;
     double old_velocity = std::sqrt(std::pow(vel(0),2) + std::pow(vel(1),2));
+    cout<<"[Debug] Old Velocity: "<<old_velocity<<endl;
+    cout<<"[Debug] dt: "<<dt<<endl;
+
     velocity_ = old_velocity + u_temp(0,0)*dt;
     u(0) = u_temp(0,0); //acceraltaion;
     u(1) = velocity_; //velocity

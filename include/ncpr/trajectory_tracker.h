@@ -9,9 +9,8 @@ namespace ncpr{
   public:
     using Ptr = shared_ptr<TrajectoryTracker>;
     using TrajectoryType = PolyTrajectory<double,2,3>;
-    explicit TrajectoryTracker(TrajectoryType::Ptr trajectory_ptr):trajectory_ptr_(trajectory_ptr){
-      
-    }
+    TrajectoryTracker(TrajectoryType::Ptr trajectory_ptr, const double& car_length, const double& kp, const double& kd):
+                 trajectory_ptr_(trajectory_ptr), car_length_(car_length), kp(kp), kd(kd){}
 
     /*!
      * @brief Given current output position and velocity, compute control to track the trajectory 

@@ -15,7 +15,7 @@ int main(int argc, char** argv){
   double total_time = 10;
   
   //create a trajectory tracker 
-  TrajectoryTracker::Ptr traj_tracker = std::make_shared<TrajectoryTracker>(poly_traj);
+  TrajectoryTracker::Ptr traj_tracker = std::make_shared<TrajectoryTracker>(poly_traj,1,1,1);
   
   //first fit a trajectory 
   poly_traj->fitPolyTrajectory(start, goal, start_vel, goal_vel, total_time);
