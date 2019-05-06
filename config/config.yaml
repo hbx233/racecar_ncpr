@@ -1,19 +1,20 @@
 car: 
-  length: 1
+  length: 0.5
 
-global_path: global_path
+global_path: move_base/GlobalPlanner/plan
+global_path_rviz: global_path_rviz
 
 trajectory:
   lookahead: 30
-  total_time: 5
+  total_time: 2
   local_path: local_path
   reference_velocity: 1
   
   
 tracking:
   odom: /vesc/odom
-  control: /vesc/low_level/ackermann_cmd_mux/output_control
-  kp: 8.0
-  kd: 2.0
+  control: /vesc/low_level/ackermann_cmd_mux/output
+  kp: 10.0
+  kd: 5.0
   goal_threshold: 0.5
   

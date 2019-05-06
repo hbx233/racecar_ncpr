@@ -11,6 +11,7 @@ namespace ncpr {
     // Get parameters
     nh_.getParam("car/length", car_length_);
     nh_.getParam("global_path", topic_globalpath_);
+    nh_.getParam("global_path_rviz", topic_globalpath_rviz_);
     nh_.getParam("trajectory/lookahead", look_ahead_);
     nh_.getParam("trajectory/local_path", topic_localpath_);
     nh_.getParam("trajectory/total_time", total_time_);
@@ -30,6 +31,7 @@ namespace ncpr {
     //publishers
     pub_localpath_ = nh_.advertise<nav_msgs::Path>(topic_localpath_, 10, true);
     pub_control_ = nh_.advertise<ackermann_msgs::AckermannDriveStamped>(topic_control_, 10, true);
+    pub_global_path_rviz_ = nh_.advertise<nav_msgs::Path>(topic_globalpath_rviz_, 10, true);
     
     // Create PolyTrajectory Instance
     local_trajectory_ptr_ = std::make_shared<PolyTrajectory<double,OUTPUT,BASIS>>();
@@ -122,6 +124,7 @@ namespace ncpr {
     else{
       ROS_ERROR("Empty Global path !");
     }
+    pub_global_path_rviz_.publish(global_path_);
   }
   
   void LocalPlanner::pose_tracking_callback(const nav_msgs::Odometry& msg){
@@ -138,21 +141,21 @@ namespace ncpr {
       //Publish control, ackermann_msgs
       //publish steering angle, cannot exceed 0.34
       double steering_angle;
-      if(control(1)>0.34){
-	steering_angle = 0.34;
-      } else if(control(1)<-0.34){
-	steering_angle = -0.34;
+      if(control(1)>1.5){
+	       steering_angle = 1.5;
+      } else if(control(1)<-1.5){
+        steering_angle = -1.5;
       } else{
 	steering_angle = control(1);
       }
       double speed;
       //set desired speed to reference velocity 
       if(control(0) > 0){
-	speed = reference_velocity_;
+	        speed = reference_velocity_;
       } else if(control(0) <0){
-	speed = -reference_velocity_;
+	        speed = -reference_velocity_;
       } else{
-	speed = std::sqrt(std::pow(vel(0),2)+std::pow(vel(1),2));
+	        speed = std::sqrt(std::pow(vel(0),2)+std::pow(vel(1),2));
       }
       ackermann_msgs::AckermannDriveStamped ackermann_control;
       ackermann_control.header.stamp = ros::Time::now();

@@ -49,10 +49,15 @@ namespace ncpr{
     int look_ahead_;
     double reference_velocity_;
     double total_time_;
+
+    //publisher to publish global path, only receive once to visualize
+    string topic_globalpath_rviz_;
+    ros::Publisher pub_global_path_rviz_;
     
     //publisher to publish local path, only used to visualize 
     string topic_localpath_;
     ros::Publisher pub_localpath_;
+
     
   private:
     //Tracking and Control part 

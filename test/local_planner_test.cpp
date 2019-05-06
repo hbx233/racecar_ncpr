@@ -10,7 +10,7 @@ int main(int argc, char** argv){
 	ros::Rate loop_rate(20);
     LocalPlanner local_planner(nh);
   int spin_time = 0;
-  while(1){
+  while(ros::ok()){
   	//cout<<"Ros Spin"<<endl;
     ros::spinOnce();
     loop_rate.sleep();

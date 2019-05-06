@@ -3,7 +3,8 @@
 	<param name="/use_sim_time" value="true" />
 	
 	<rosparam command="load" file="$(find racecar_ncpr)/config/config.yaml"/>
-	<node pkg="tf" type="static_transform_publisher" name="static_tf_publisher" args="0 0 0 0 0 0 /odom_gazebo /base_link 100" />
-	<node pkg="racecar_ncpr" type="global_planner_test" name="global_planner_test" output="screen"/>
+	<!--<node pkg="tf" type="static_transform_publisher" name="static_tf_publisher" args="0 0 0 0 0 0 /odom_gazebo /base_link 100" /> -->
+
+	<!--<node pkg="racecar_ncpr" type="global_planner_test" name="global_planner_test" output="screen"/>-->
 	<node pkg="racecar_ncpr" type="local_planner_test" name="local_planner_test" output="screen" />
 </launch>
