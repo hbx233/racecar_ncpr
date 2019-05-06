@@ -46,30 +46,32 @@ namespace ncpr{
      * 
      */
     void pose_trajectory_callback(const nav_msgs::Odometry& msg);
+    int look_ahead_;
+    double reference_velocity_;
+    double total_time_;
     
     //publisher to publish local path, only used to visualize 
     string topic_localpath_;
     ros::Publisher pub_localpath_;
     
+  private:
+    //Tracking and Control part 
+    //Tracking parameter 
+    double car_length_; //length of car
+    double kp_; //p term
+    double kd_; //d term
+    double goal_threshold_; //threshold for checking if reached the goal
+    
+    //tracking subscriber 
     ros::Subscriber sub_pose_tracking_;
     /*!
      * @brief Pose Callback function for trajectory tracking 
      */
     void pose_tracking_callback(const nav_msgs::Odometry& msg);
-  private:
-    //Tracking and Control part 
-    //Control publisher 
-    double car_length_;
-    double kp_;
-    double kd_;
-    double goal_threshold_;
-    string topic_control_;
-    ros::Publisher pub_control_;
-    /*!
-     * @brief convert control to ackermann_msgs and publish it 
-     * @param control the high level control signals that pass to low level controller 
-     */
-    void publishControlToAckermann(Eigen::Vector3d control);
+    
+    //Control Publisher
+    string topic_control_; //control topic name 
+    ros::Publisher pub_control_; //control publisher, ackermann_msgs::AckermannDriveStamped
   private:
     //start and end 
     /*!
@@ -99,11 +101,7 @@ namespace ncpr{
      *        Set the calculated value to class member fields 
      */
     void calculateStartAndGoal(const int& start_idx, const double& start_vel_mag);
-    //TODO: Write a tf listener node which listen to tf and publish current pose
     //Trajectory Generation Parameter 
-    int look_ahead_{10};
-    double reference_velocity_;
-    double total_time_;
     PolyTrajectory<double,OUTPUT,BASIS>::OutputType local_start_;
     int local_start_idx_;
     PolyTrajectory<double,OUTPUT,BASIS>::OutputType local_goal_;
