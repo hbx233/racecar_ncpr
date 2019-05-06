@@ -98,11 +98,11 @@ namespace ncpr{
      * @brief Calculate local trajectory's start and goal position and velocity, 
      *        Set the calculated value to class member fields 
      */
-    void calculateStartAndGoal(const int& start_idx);
+    void calculateStartAndGoal(const int& start_idx, const double& start_vel_mag);
     //TODO: Write a tf listener node which listen to tf and publish current pose
     //Trajectory Generation Parameter 
     int look_ahead_{10};
-    double vel_magnitude_;
+    double reference_velocity_;
     double total_time_;
     PolyTrajectory<double,OUTPUT,BASIS>::OutputType local_start_;
     int local_start_idx_;

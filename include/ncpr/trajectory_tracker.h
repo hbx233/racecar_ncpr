@@ -19,7 +19,7 @@ namespace ncpr{
      * @return control output to track the trajectory 
      */
     
-    Eigen::Vector3d computeTrackingControl(TrajectoryType::OutputType pos, TrajectoryType::OutputType vel, double time);
+    Eigen::Vector2d computeTrackingControl(TrajectoryType::OutputType pos, TrajectoryType::OutputType vel, double theta, double time);
     /*!
      * @brief compute and return the elapsed time of tracking of local trajectory started from start_time_
      */

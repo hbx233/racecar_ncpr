@@ -25,7 +25,7 @@ int main(int argc, char** argv)
   header_msg.frame_id = "map";
   path.header = header_msg;
 
-  for(double i = 0; i <= 3; i += 0.05)
+  for(double i = 0; i <= 2; i += 0.05)
   {
     pose.position.y = 1*i;
     pose.position.x = std::pow(i,2) + 2*i;

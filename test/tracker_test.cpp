@@ -26,6 +26,6 @@ int main(int argc, char** argv){
   cout<<"Input position and velocity"<<endl;
   double real_time=0;
   //Track the trajectory for one step 
-  Vector3d control = traj_tracker->computeTrackingControl(real_pos, real_vel, real_time);
+  Vector2d control = traj_tracker->computeTrackingControl(real_pos, real_vel, 0, real_time);
   cout<<control<<endl;
 }
