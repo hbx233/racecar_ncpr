@@ -162,10 +162,9 @@ trajectory’s tracking error won’t affect dynamically regenerated
 trajectory afterward, and thus lead to a more stabilized tracking
 performance.
 
-[t]<span>0.5</span> ![control](pics/control.png "fig:") [control]
+![control](pics/control.png "fig:")
 
-[t]<span>0.5</span> ![cross tarck error for
-positon](pics/cte.png "fig:") [cte]
+![cross tarck error for positon](pics/cte.png "fig:")
 
 Some Failure case are also shown as below. As shown in Fig [fail1]. the
 first case is due the long look head points, so when the robots is in
@@ -178,9 +177,9 @@ the total time is too long for two close waypoints, so the generating
 trajectory will have unusual behaviors to achieve in desired points in
 longer time, instead small total time would results in better poly fit.
 
-[t]<span>0.5</span> ![long look head](pics/fail1.png "fig:") [fail1]
+![long look head](pics/fail1.png "fig:")
 
-[t]<span>0.5</span> ![long total time](pics/fail2.png "fig:") [fail2]
+![long total time](pics/fail2.png "fig:")
 
 Conclusions and Future Extension
 ================================
